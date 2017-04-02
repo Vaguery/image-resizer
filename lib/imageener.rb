@@ -1,19 +1,20 @@
 require 'mini_magick'
 
-module TozierImagePreprocessor
-  class Generator < Jekyll::Generator
+module Jekyll
+  class TozierPicserizer < Generator
     def generate(site)
 
-      source_dir = "pix"
-      sizes = [300,600,900]
-      target_dir = "images/posts"
+      src = site.config["picserizer"]["source"]
+      source_dir = File.join(site.source,src)
+      sizes = site.config["picserizer"]["sizes"]
+      target_dir = File.join(site.source,site.config["picserizer"]["target"])
 
       our_pictures = Dir.glob("#{source_dir}/*.jpg")
 
       sizes.each do |size|
         full_path = "#{target_dir}/#{size}"
         if Dir.exist?(full_path)
-          puts "I found #{full_path}!"
+        #   puts "I found #{full_path}!"
         else
           Dir.mkdir(full_path)
         end
@@ -23,7 +24,7 @@ module TozierImagePreprocessor
         sizes.each do |size|
           new_name = "#{target_dir}/#{size.to_s}/" + File.basename(pic_name)
           if File.exist?(new_name)
-            puts "There's already a #{new_name}!"
+            # puts "There's already a #{new_name}!"
           else
             loaded_pic = MiniMagick::Image.open(pic_name)
             loaded_pic.resize size.to_s
